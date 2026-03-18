@@ -36,11 +36,6 @@ use PrestaShop\Module\BlockReassurance\Entity\Psreassurance;
 class PsreassuranceRepository extends ServiceEntityRepository
 {
     /**
-     * @var ManagerRegistry the Doctrine Registry
-     */
-    private $registry;
-
-    /**
      * @var Connection the Database connection
      */
     private $connection;
@@ -99,7 +94,7 @@ class PsreassuranceRepository extends ServiceEntityRepository
 
         $dbResult = $qb->execute()->fetchAll();
 
-        foreach ($dbResult as $key => $value) {
+        foreach ($dbResult as $value) {
             if (!isset($result[$value['id_psreassurance']])) {
                 $result[$value['id_psreassurance']] = $value;
                 $result[$value['id_psreassurance']]['title'] = [];

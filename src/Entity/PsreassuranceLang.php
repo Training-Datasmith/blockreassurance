@@ -72,9 +72,6 @@ class PsreassuranceLang
         return $this->psreassurance;
     }
 
-    /**
-     * @param Psreassurance $psreassurance
-     */
     public function setPsreassurance(Psreassurance $psreassurance): self
     {
         $this->psreassurance = $psreassurance;
@@ -90,9 +87,6 @@ class PsreassuranceLang
         return $this->lang;
     }
 
-    /**
-     * @param Lang $lang
-     */
     public function setLang(Lang $lang): self
     {
         $this->lang = $lang;

@@ -31,11 +31,6 @@ use PrestaShopBundle\Entity\Repository\LangRepository;
 class PsreassuranceFormDataHandler implements FormDataHandlerInterface
 {
     /**
-     * @var PsreassuranceRepository
-     */
-    private $psreassuranceRepository;
-
-    /**
      * @var LangRepository
      */
     private $langRepository;
@@ -47,15 +42,12 @@ class PsreassuranceFormDataHandler implements FormDataHandlerInterface
 
     /**
      * @param PsreassuranceeRepository $psreassuranceRepository
-     * @param LangRepository $langRepository
-     * @param EntityManagerInterface $entityManager
      */
     public function __construct(
         PsreassuranceRepository $psreassuranceRepository,
         LangRepository $langRepository,
         EntityManagerInterface $entityManager
     ) {
-        $this->psreassuranceRepository = $psreassuranceRepository;
         $this->langRepository = $langRepository;
         $this->entityManager = $entityManager;
     }

@@ -66,7 +66,7 @@ class ReassuranceActivity extends ObjectModel
      *
      * @deprecated 6.0.0 - migrated to src/Form/PsreassuranceFormDataHandler as createLangs and updateLangs
      */
-    public function handleBlockValues($psr_languages, $type_link, $id_cms)
+    public function handleBlockValues($psr_languages, $type_link, $id_cms): void
     {
         $languages = Language::getLanguages();
         $newValues = [];
@@ -130,7 +130,7 @@ class ReassuranceActivity extends ObjectModel
 
         $dbResult = Db::getInstance()->executeS($sql);
 
-        foreach ($dbResult as $key => $value) {
+        foreach ($dbResult as $value) {
             if (!isset($result[$value['id_psreassurance']])) {
                 $result[$value['id_psreassurance']] = $value;
                 $result[$value['id_psreassurance']]['title'] = [];
