@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -176,7 +178,7 @@ class AdminBlockListingController extends ModuleAdminController
         } else {
             if ($picto != '') {
                 $parts = explode('/', $picto);
-                $parts = array_slice($parts , -3);
+                $parts = array_slice($parts, -3);
                 $picto = implode('/', $parts);
             }
             $blockPsr->setIcon($picto);

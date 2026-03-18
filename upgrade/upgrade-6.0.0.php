@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -39,14 +41,14 @@ function upgrade_module_6_0_0($module)
         if ($row['icon']) {
 
             $parts = explode('/', $row['icon']);
-            $parts = array_slice($parts , -3);
+            $parts = array_slice($parts, -3);
 
             $data = [
-                'icon' => implode('/', $parts)
+                'icon' => implode('/', $parts),
             ];
         } elseif ($row['custom_icon']) {
             $data = [
-                'custom_icon' => basename($row['custom_icon'])
+                'custom_icon' => basename($row['custom_icon']),
             ];
         }
 

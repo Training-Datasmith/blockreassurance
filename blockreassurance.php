@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -31,21 +33,21 @@ use PrestaShop\PrestaShop\Core\Module\WidgetInterface;
 
 class blockreassurance extends Module implements WidgetInterface
 {
-    const ALLOWED_CONTROLLERS_CHECKOUT = [
+    public const ALLOWED_CONTROLLERS_CHECKOUT = [
         'cart',
         'order',
     ];
-    const ALLOWED_CONTROLLERS_PRODUCT = [
+    public const ALLOWED_CONTROLLERS_PRODUCT = [
         'product',
     ];
-    const POSITION_NONE = 0;
-    const POSITION_BELOW_HEADER = 1;
-    const POSITION_ABOVE_HEADER = 2;
+    public const POSITION_NONE = 0;
+    public const POSITION_BELOW_HEADER = 1;
+    public const POSITION_ABOVE_HEADER = 2;
 
-    const PSR_HOOK_HEADER = 'PSR_HOOK_HEADER';
-    const PSR_HOOK_FOOTER = 'PSR_HOOK_FOOTER';
-    const PSR_HOOK_PRODUCT = 'PSR_HOOK_PRODUCT';
-    const PSR_HOOK_CHECKOUT = 'PSR_HOOK_CHECKOUT';
+    public const PSR_HOOK_HEADER = 'PSR_HOOK_HEADER';
+    public const PSR_HOOK_FOOTER = 'PSR_HOOK_FOOTER';
+    public const PSR_HOOK_PRODUCT = 'PSR_HOOK_PRODUCT';
+    public const PSR_HOOK_CHECKOUT = 'PSR_HOOK_CHECKOUT';
 
     /** @var string */
     public $name;

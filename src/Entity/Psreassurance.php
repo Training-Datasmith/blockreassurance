@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -31,9 +32,9 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Psreassurance
 {
-    const TYPE_LINK_NONE = 0;
-    const TYPE_LINK_CMS_PAGE = 1;
-    const TYPE_LINK_URL = 2;
+    public const TYPE_LINK_NONE = 0;
+    public const TYPE_LINK_CMS_PAGE = 1;
+    public const TYPE_LINK_URL = 2;
 
     /**
      * @var int
