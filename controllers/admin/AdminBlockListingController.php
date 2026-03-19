@@ -197,7 +197,7 @@ class AdminBlockListingController extends ModuleAdminController
                 $authMimeType
             );
 
-            if (is_bool($validUpload) && $validUpload === false) {
+            if ($validUpload === true) {
                 // Remove Custom icon
                 if ($blockPsr->getCustomIcon() != '') {
                     $filePath = blockreassurance::$static_folder_file_upload . '/' . basename($blockPsr->getCustomIcon());
