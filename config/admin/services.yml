@@ -3,7 +3,7 @@ imports:
 
 services:
     block_reassurance_form_data_handler:
-        class: 'PrestaShop\Module\BlockReassurance\Form\PsreassuranceFormDataHandler'
+        class: 'Presta_Shop\Module\Block_Reassurance\Form\Psreassurance_Form_Data_Handler'
         public: true
         arguments:
             - '@block_reassurance_repository'

@@ -1,6 +1,6 @@
 services:
   block_reassurance_repository:
-    class: PrestaShop\Module\BlockReassurance\Repository\PsreassuranceRepository
+    class: Presta_Shop\Module\Block_Reassurance\Repository\Psreassurance_Repository
     public: true
     arguments:
       - '@doctrine'
