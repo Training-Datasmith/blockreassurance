@@ -18,55 +18,45 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  */
-declare(strict_types=1);
+declare (strict_types=1);
+namespace Presta_Shop\Module\Block_Reassurance\Form;
 
-namespace PrestaShop\Module\BlockReassurance\Form;
-
-use Doctrine\ORM\EntityManagerInterface;
-use PrestaShop\Module\BlockReassurance\Entity\Psreassurance;
-use PrestaShop\Module\BlockReassurance\Entity\PsreassuranceLang;
-use PrestaShop\Module\BlockReassurance\Repository\PsreassuranceRepository;
-use PrestaShop\PrestaShop\Core\Form\IdentifiableObject\DataHandler\FormDataHandlerInterface;
-use PrestaShopBundle\Entity\Repository\LangRepository;
-
-class PsreassuranceFormDataHandler implements FormDataHandlerInterface
+use Doctrine\ORM\Entity_Manager_Interface;
+use Presta_Shop\Module\Block_Reassurance\Entity\Psreassurance;
+use Presta_Shop\Module\Block_Reassurance\Entity\Psreassurance_Lang;
+use Presta_Shop\Module\Block_Reassurance\Repository\Psreassurance_Repository;
+use Presta_Shop\Presta_Shop\Core\Form\Identifiable_Object\Data_Handler\Form_Data_Handler_Interface;
+use Presta_Shop_Bundle\Entity\Repository\Lang_Repository;
+class Psreassurance_Form_Data_Handler implements Form_Data_Handler_Interface
 {
     /**
      * @var LangRepository
      */
-    private $langRepository;
-
+    private $lang_repository;
     /**
      * @var EntityManagerInterface
      */
-    private $entityManager;
-
+    private $entity_manager;
     /**
      * @param PsreassuranceeRepository $psreassuranceRepository
      */
-    public function __construct(
-        PsreassuranceRepository $psreassuranceRepository,
-        LangRepository $langRepository,
-        EntityManagerInterface $entityManager
-    ) {
-        $this->langRepository = $langRepository;
-        $this->entityManager = $entityManager;
+    public function __construct(Psreassurance_Repository $psreassurance_repository, Lang_Repository $lang_repository, Entity_Manager_Interface $entity_manager)
+    {
+        $this->lang_repository = $lang_repository;
+        $this->entity_manager = $entity_manager;
     }
-
     /**
      * {@inheritdoc}
      */
     public function create(array $data)
     {
     }
-
     /**
      * {@inheritdoc}
      */
     public function update($id, array $data)
     {
     }
-
     /**
      * @param Psreassurance $psreassurance
      * @param array $psr_languages
@@ -75,36 +65,26 @@ class PsreassuranceFormDataHandler implements FormDataHandlerInterface
      *
      * @todo migrate this temporary function to above standard function create
      */
-    public function createLangs($psreassurance, $psr_languages, $type_link, $id_cms): void
+    public function create_langs($psreassurance, $psr_languages, $type_link, $id_cms): void
     {
-        foreach ($psr_languages as $langId => $langContent) {
-            $lang = $this->langRepository->find($langId);
-            $psreassuranceLang = new PsreassuranceLang();
-            $psreassuranceLang
-                ->setLang($lang)
-                ->setTitle($langContent->title)
-                ->setDescription($langContent->description)
-                ->setLink($langContent->url)
-            ;
+        foreach ($psr_languages as $lang_id => $lang_content) {
+            $lang = $this->lang_repository->find($lang_id);
+            $psreassurance_lang = new Psreassurance_Lang();
+            $psreassurance_lang->set_lang($lang)->set_title($lang_content->title)->set_description($lang_content->description)->set_link($lang_content->url);
             if (!empty($id_cms) && $type_link === Psreassurance::TYPE_LINK_CMS_PAGE) {
-                $psreassurance->setCmsId($id_cms);
-                $link = \Context::getContext()->link;
-                $psreassuranceLang->setLink(
-                    $link->getCMSLink($id_cms, null, null, $langId)
-                );
+                $psreassurance->set_cms_id($id_cms);
+                $link = \Context::get_context()->link;
+                $psreassurance_lang->set_link($link->get_cms_link($id_cms, null, null, $lang_id));
             }
-            $psreassurance->addPsreassuranceLang($psreassuranceLang);
+            $psreassurance->add_psreassurance_lang($psreassurance_lang);
         }
-
         if ($type_link == 'undefined') {
             $type_link = Psreassurance::TYPE_LINK_NONE;
         }
-        $psreassurance->setLinkType($type_link);
-
-        $this->entityManager->persist($psreassurance);
-        $this->entityManager->flush();
+        $psreassurance->set_link_type($type_link);
+        $this->entity_manager->persist($psreassurance);
+        $this->entity_manager->flush();
     }
-
     /**
      * @param Psreassurance $psreassurance
      * @param array $psr_languages
@@ -113,34 +93,26 @@ class PsreassuranceFormDataHandler implements FormDataHandlerInterface
      *
      * @todo migrate this temporary function to above standard function update
      */
-    public function updateLangs($psreassurance, $psr_languages, $type_link, $id_cms): void
+    public function update_langs($psreassurance, $psr_languages, $type_link, $id_cms): void
     {
-        foreach ($psr_languages as $langId => $langContent) {
-            $lang = $this->langRepository->find($langId);
-            $psreassuranceLang = $psreassurance->getPsreassuranceLangByLangId($langId);
-            if (null === $psreassuranceLang) {
+        foreach ($psr_languages as $lang_id => $lang_content) {
+            $lang = $this->lang_repository->find($lang_id);
+            $psreassurance_lang = $psreassurance->get_psreassurance_lang_by_lang_id($lang_id);
+            if (null === $psreassurance_lang) {
                 continue;
             }
-            $psreassuranceLang
-                ->setTitle($langContent->title)
-                ->setDescription($langContent->description)
-                ->setLink($langContent->url)
-            ;
+            $psreassurance_lang->set_title($lang_content->title)->set_description($lang_content->description)->set_link($lang_content->url);
             if (!empty($id_cms) && $type_link === Psreassurance::TYPE_LINK_CMS_PAGE) {
-                $psreassurance->setCmsId($id_cms);
-                $link = \Context::getContext()->link;
-                $psreassuranceLang->setLink(
-                    $link->getCMSLink($id_cms, null, null, $langId)
-                );
+                $psreassurance->set_cms_id($id_cms);
+                $link = \Context::get_context()->link;
+                $psreassurance_lang->set_link($link->get_cms_link($id_cms, null, null, $lang_id));
             }
         }
-
         if ($type_link == 'undefined') {
             $type_link = Psreassurance::TYPE_LINK_NONE;
         }
-        $psreassurance->setLinkType($type_link);
-
-        $this->entityManager->persist($psreassurance);
-        $this->entityManager->flush();
+        $psreassurance->set_link_type($type_link);
+        $this->entity_manager->persist($psreassurance);
+        $this->entity_manager->flush();
     }
 }

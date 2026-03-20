@@ -18,13 +18,11 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  */
-declare(strict_types=1);
+declare (strict_types=1);
+namespace Presta_Shop\Module\Block_Reassurance\Entity;
 
-namespace PrestaShop\Module\BlockReassurance\Entity;
-
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Array_Collection;
 use Doctrine\ORM\Mapping as ORM;
-
 /**
  * @ORM\Table()
  *
@@ -35,7 +33,6 @@ class Psreassurance
     public const TYPE_LINK_NONE = 0;
     public const TYPE_LINK_CMS_PAGE = 1;
     public const TYPE_LINK_URL = 2;
-
     /**
      * @var int
      *
@@ -46,235 +43,189 @@ class Psreassurance
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
-
     /**
      * @var string
      *
      * @ORM\Column(name="icon", type="string", length=255)
      */
     private $icon;
-
     /**
      * @var string
      *
      * @ORM\Column(name="custom_icon", type="string", length=255)
      */
-    private $customIcon;
-
+    private $custom_icon;
     /**
      * @var int
      *
      * @ORM\Column(name="status", type="integer")
      */
     private $status;
-
     /**
      * @var int
      *
      * @ORM\Column(name="position", type="integer")
      */
     private $position;
-
     /**
      * @var int
      *
      * @ORM\Column(name="type_link", type="integer")
      */
-    private $linkType;
-
+    private $link_type;
     /**
      * @var int
      *
      * @ORM\Column(name="id_cms", type="integer")
      */
-    private $cmsId;
-
+    private $cms_id;
     /**
      * @var \DateTime
      *
      * @ORM\Column(name="date_add", type="datetime", nullable=false)
      */
-    private $dateAdd;
-
+    private $date_add;
     /**
      * @var \DateTime
      *
      * @ORM\Column(name="date_upd", type="datetime", nullable=true)
      */
-    private $dateUpd;
-
+    private $date_upd;
     /**
      * @ORM\OneToMany(targetEntity="PrestaShop\Module\BlockReassurance\Entity\PsreassuranceLang", cascade={"persist", "remove"}, mappedBy="psreassurance")
      */
-    private $psreassuranceLangs;
-
+    private $psreassurance_langs;
     public function __construct()
     {
-        $this->psreassuranceLangs = new ArrayCollection();
+        $this->psreassurance_langs = new Array_Collection();
     }
-
-    public function getId(): int
+    public function get_id(): int
     {
         return $this->id;
     }
-
     /**
      * @return ArrayCollection
      */
-    public function getPsreassuranceLangs()
+    public function get_psreassurance_langs()
     {
-        return $this->psreassuranceLangs;
+        return $this->psreassurance_langs;
     }
-
     /**
      * @return QuoteLang|null
      */
-    public function getPsreassuranceLangByLangId(int $langId)
+    public function get_psreassurance_lang_by_lang_id(int $lang_id)
     {
-        foreach ($this->psreassuranceLangs as $psreassuranceLang) {
-            if ($langId === $psreassuranceLang->getLang()->getId()) {
-                return $psreassuranceLang;
+        foreach ($this->psreassurance_langs as $psreassurance_lang) {
+            if ($lang_id === $psreassurance_lang->get_lang()->get_id()) {
+                return $psreassurance_lang;
             }
         }
-
         return null;
     }
-
-    public function addPsreassuranceLang(PsreassuranceLang $psreassuranceLang): self
+    public function add_psreassurance_lang(Psreassurance_Lang $psreassurance_lang): self
     {
-        $psreassuranceLang->setPsreassurance($this);
-        $this->psreassuranceLangs->add($psreassuranceLang);
-
+        $psreassurance_lang->set_psreassurance($this);
+        $this->psreassurance_langs->add($psreassurance_lang);
         return $this;
     }
-
-    public function getPsreassuranceTitle(): string
+    public function get_psreassurance_title(): string
     {
-        if ($this->psreassuranceLangs->count() <= 0) {
+        if ($this->psreassurance_langs->count() <= 0) {
             return '';
         }
-
-        $psreassuranceLang = $this->psreassuranceLangs->first();
-
-        return $psreassuranceLang->getTitle();
+        $psreassurance_lang = $this->psreassurance_langs->first();
+        return $psreassurance_lang->get_title();
     }
-
-    public function getPsreassuranceDescription(): string
+    public function get_psreassurance_description(): string
     {
-        if ($this->psreassuranceLangs->count() <= 0) {
+        if ($this->psreassurance_langs->count() <= 0) {
             return '';
         }
-
-        $psreassuranceLang = $this->psreassuranceLangs->first();
-
-        return $psreassuranceLang->getDescription();
+        $psreassurance_lang = $this->psreassurance_langs->first();
+        return $psreassurance_lang->get_description();
     }
-
-    public function getIcon(): string
+    public function get_icon(): string
     {
         return $this->icon;
     }
-
-    public function setIcon(string $icon): self
+    public function set_icon(string $icon): self
     {
         $this->icon = $icon;
-
         return $this;
     }
-
-    public function getCustomIcon(): string
+    public function get_custom_icon(): string
     {
-        return $this->customIcon;
+        return $this->custom_icon;
     }
-
-    public function setCustomIcon(string $customIcon): self
+    public function set_custom_icon(string $custom_icon): self
     {
-        $this->customIcon = $customIcon;
-
+        $this->custom_icon = $custom_icon;
         return $this;
     }
-
-    public function getStatus(): int
+    public function get_status(): int
     {
         return $this->status;
     }
-
-    public function setStatus(int $status): self
+    public function set_status(int $status): self
     {
         $this->status = $status;
-
         return $this;
     }
-
-    public function getPosition(): int
+    public function get_position(): int
     {
         return $this->position;
     }
-
-    public function setPosition(int $position): self
+    public function set_position(int $position): self
     {
         $this->position = $position;
-
         return $this;
     }
-
-    public function getLinkType(): int
+    public function get_link_type(): int
     {
-        return $this->linkType;
+        return $this->link_type;
     }
-
-    public function setLinkType(int $linkType): self
+    public function set_link_type(int $link_type): self
     {
-        $this->linkType = $linkType;
-
+        $this->link_type = $link_type;
         return $this;
     }
-
-    public function getCmsId(): int
+    public function get_cms_id(): int
     {
-        return $this->cmsId;
+        return $this->cms_id;
     }
-
-    public function setCmsId(int $cmsId): self
+    public function set_cms_id(int $cms_id): self
     {
-        $this->cmsId = $cmsId;
-
+        $this->cms_id = $cms_id;
         return $this;
     }
-
     /**
      * Set dateAdd.
      */
-    public function setDateAdd(\DateTime $dateAdd): self
+    public function set_date_add(\DateTime $date_add): self
     {
-        $this->dateAdd = $dateAdd;
-
+        $this->date_add = $date_add;
         return $this;
     }
-
     /**
      * Get dateAdd.
      */
-    public function getDateAdd(): \DateTime
+    public function get_date_add(): \DateTime
     {
-        return $this->dateAdd;
+        return $this->date_add;
     }
-
     /**
      * Set dateUpd.
      */
-    public function setDateUpd(\DateTime $dateUpd): self
+    public function set_date_upd(\DateTime $date_upd): self
     {
-        $this->dateUpd = $dateUpd;
-
+        $this->date_upd = $date_upd;
         return $this;
     }
-
     /**
      * Get dateUpd.
      */
-    public function getDateUpd(): \DateTime
+    public function get_date_upd(): \DateTime
     {
-        return $this->dateUpd;
+        return $this->date_upd;
     }
 }

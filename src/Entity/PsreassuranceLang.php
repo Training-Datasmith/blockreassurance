@@ -8,19 +8,17 @@
  * This source file is subject to the Academic Free License 3.0 (AFL-3.0).
  * It is also available through the world-wide-web at this URL: https://opensource.org/licenses/AFL-3.0
  */
-declare(strict_types=1);
-
-namespace PrestaShop\Module\BlockReassurance\Entity;
+declare (strict_types=1);
+namespace Presta_Shop\Module\Block_Reassurance\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use PrestaShopBundle\Entity\Lang;
-
+use Presta_Shop_Bundle\Entity\Lang;
 /**
  * @ORM\Table()
  *
  * @ORM\Entity()
  */
-class PsreassuranceLang
+class Psreassurance_Lang
 {
     /**
      * @var Psreassurance
@@ -32,7 +30,6 @@ class PsreassuranceLang
      * @ORM\JoinColumn(name="id_psreassurance", referencedColumnName="id_psreassurance", nullable=false)
      */
     private $psreassurance;
-
     /**
      * @var Lang
      *
@@ -43,91 +40,73 @@ class PsreassuranceLang
      * @ORM\JoinColumn(name="id_lang", referencedColumnName="id_lang", nullable=false, onDelete="CASCADE")
      */
     private $lang;
-
     /**
      * @var string
      *
      * @ORM\Column(name="title", type="string", nullable=false)
      */
     private $title;
-
     /**
      * @var string
      *
      * @ORM\Column(name="description", type="string", nullable=false)
      */
     private $description;
-
     /**
      * @var string
      *
      * @ORM\Column(name="link", type="string", nullable=true)
      */
     private $link;
-
     /**
      * @return Psreassurance
      */
-    public function getPsreassurance()
+    public function get_psreassurance()
     {
         return $this->psreassurance;
     }
-
-    public function setPsreassurance(Psreassurance $psreassurance): self
+    public function set_psreassurance(Psreassurance $psreassurance): self
     {
         $this->psreassurance = $psreassurance;
-
         return $this;
     }
-
     /**
      * @return Lang
      */
-    public function getLang()
+    public function get_lang()
     {
         return $this->lang;
     }
-
-    public function setLang(Lang $lang): self
+    public function set_lang(Lang $lang): self
     {
         $this->lang = $lang;
-
         return $this;
     }
-
-    public function getTitle(): string
+    public function get_title(): string
     {
         return $this->title;
     }
-
-    public function setTitle(string $title): self
+    public function set_title(string $title): self
     {
         $this->title = $title;
-
         return $this;
     }
-
-    public function getDescription(): string
+    public function get_description(): string
     {
         return $this->description;
     }
-
-    public function setDescription(string $description): self
+    public function set_description(string $description): self
     {
         $this->description = $description;
-
         return $this;
     }
-
-    public function getLink(): string
+    public function get_link(): string
     {
         return $this->link;
     }
-
-    public function setLink(string $link): self
+    public function set_link(string $link): self
     {
         $this->link = $link;
-
         return $this;
     }
 }
