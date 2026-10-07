@@ -37,6 +37,7 @@ abstract class ModuleTestCase extends TestCase
         \ImageManager::reset();
         \CMS::reset();
         \Context::reset();
+        \Tab::reset();
         $_FILES = [];
         $this->swallowHeaderWarnings();
     }
@@ -44,18 +45,23 @@ abstract class ModuleTestCase extends TestCase
     protected function tearDown(): void
     {
         $_FILES = [];
+        if (class_exists('blockreassurance', false)) {
+            \blockreassurance::$static_img_path = null;
+            \blockreassurance::$static_img_path_perso = null;
+            \blockreassurance::$static_folder_file_upload = null;
+        }
         restore_error_handler();
         parent::tearDown();
     }
 
     /**
      * Ajax responses call header(), which warns once PHPUnit has started output.
+     * Other warnings, including move_uploaded_file(), are left for the test to see.
      */
     private function swallowHeaderWarnings()
     {
         $previous = set_error_handler(function ($severity, $message, $file, $line) use (&$previous) {
-            if (false !== strpos($message, 'Cannot modify header information')
-                || false !== strpos($message, 'Unable to move')) {
+            if (false !== strpos($message, 'Cannot modify header information')) {
                 return true;
             }
             if ($previous) {

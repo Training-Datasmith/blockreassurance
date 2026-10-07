@@ -516,7 +516,7 @@ class AdminBlockListingControllerTest extends ModuleTestCase
         mkdir($uploadDirectory, 0777, true);
         $oldIcon = $uploadDirectory . '/old.svg';
         file_put_contents($oldIcon, '<svg xmlns="http://www.w3.org/2000/svg"></svg>');
-        $source = $uploadDirectory . '/incoming.svg';
+        $source = sys_get_temp_dir() . '/br-incoming-' . uniqid('', true) . '.svg';
         file_put_contents($source, '<svg xmlns="http://www.w3.org/2000/svg"></svg>');
         \ImageManager::$validateUploadResult = false;
         $_FILES = [
@@ -542,16 +542,24 @@ class AdminBlockListingControllerTest extends ModuleTestCase
         $controller = $this->controllerWithServices($finder, $handler);
         $controller->module = $module;
         \blockreassurance::$static_folder_file_upload = $uploadDirectory;
+        $destination = $uploadDirectory . '/incoming.svg';
 
         try {
+            // A temp file is not an HTTP upload, so PHP returns false before it
+            // can warn "Unable to move". The controller still stores the new name.
             $controller->displayAjaxSaveBlockContent();
 
             $this->assertFileDoesNotExist($oldIcon);
+            $this->assertFileDoesNotExist($destination);
+            $this->assertFileExists($source);
             $this->assertSame('incoming.svg', $existing->getCustomIcon());
             $this->assertSame('', $existing->getIcon());
             $this->assertSame($existing, $handler->updated[0][0]);
             $this->assertSame('"success"', $controller->ajaxOutput);
         } finally {
+            if (is_file($source)) {
+                unlink($source);
+            }
             if (is_dir($uploadDirectory)) {
                 foreach (scandir($uploadDirectory) as $entry) {
                     if ('.' !== $entry && '..' !== $entry && is_file($uploadDirectory . '/' . $entry)) {
@@ -561,6 +569,25 @@ class AdminBlockListingControllerTest extends ModuleTestCase
                 rmdir($uploadDirectory);
             }
         }
+    }
+
+    public function testSaveBlockContentTreatsMissingPictoAndLanguagesAsEmpty()
+    {
+        \Tools::$values = [];
+        $handler = new \FakeFormDataHandler();
+        $controller = $this->controllerWithServices(new \FakeBlockFinder(), $handler);
+
+        $controller->displayAjaxSaveBlockContent();
+
+        $block = $handler->created[0][0];
+        $this->assertSame('', $block->getIcon());
+        $this->assertSame('', $block->getCustomIcon());
+        $this->assertSame(0, $block->getStatus());
+        $this->assertSame(1, $block->getPosition());
+        $this->assertSame([], $handler->created[0][1]);
+        $this->assertSame(0, $handler->created[0][2]);
+        $this->assertSame(0, $handler->created[0][3]);
+        $this->assertSame('"success"', $controller->ajaxOutput);
     }
 
     public function testSaveBlockContentAllowsAnEmptyLanguagePayload()

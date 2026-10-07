@@ -93,13 +93,15 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php-version: ['7.4', '8.1']
+        # PHPUnit 9 runs on >=7.3. PHP 7.1 syntax stays in the php-linter job.
+        php-version: ['7.4', '8.1', '8.2']
     steps:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-version }}
           coverage: none
+          extensions: mbstring, dom, xml, xmlwriter, fileinfo
 
       - name: Checkout
         uses: actions/checkout@v4

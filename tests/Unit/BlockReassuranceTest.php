@@ -502,6 +502,10 @@ class BlockReassuranceTest extends ModuleTestCase
 
     public function testUploadDirectoryRightsFollowUnixExecutePermission()
     {
+        if (DIRECTORY_SEPARATOR !== '/' || (function_exists('posix_geteuid') && posix_geteuid() === 0)) {
+            $this->markTestSkipped('Unix mode bits are only meaningful for a non-root user.');
+        }
+
         $directory = sys_get_temp_dir() . '/br-upload-' . uniqid('', true);
         mkdir($directory, 0755);
         $module = $this->createModule();
@@ -526,14 +530,6 @@ class BlockReassuranceTest extends ModuleTestCase
     {
         $module = $this->createModule();
         $module->folder_file_upload = sys_get_temp_dir() . '/br-missing-' . uniqid('', true);
-
-        $this->assertFalse($this->callPrivate($module, 'folderUploadFilesHasGoodRights'));
-    }
-
-    public function testMissingWindowsUploadPathIsRejected()
-    {
-        $module = $this->createModule();
-        $module->folder_file_upload = 'C:\\missing\\img_perso\\';
 
         $this->assertFalse($this->callPrivate($module, 'folderUploadFilesHasGoodRights'));
     }

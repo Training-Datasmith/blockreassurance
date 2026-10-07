@@ -51,6 +51,14 @@ class UpgradeScriptsTest extends ModuleTestCase
         $result = upgrade_module_4_0_0($module);
 
         $this->assertSame(1, $result);
+        $this->assertCount(1, \Tab::$created);
+        $tab = \Tab::$created[0];
+        $this->assertSame('AdminBlockListing', $tab->class_name);
+        $this->assertSame(-1, $tab->id_parent);
+        $this->assertSame('blockreassurance', $tab->module);
+        $this->assertTrue($tab->added);
+        $this->assertTrue($tab->active);
+        $this->assertSame([1 => 'blockreassurance', 3 => 'blockreassurance'], $tab->name);
         $this->assertContains(true, \Language::$calls);
         $sql = implode("\n", \Db::getInstance()->executed);
         $this->assertStringContainsString('CREATE TABLE IF NOT EXISTS `ps_psreassurance`', $sql);
@@ -89,7 +97,7 @@ class UpgradeScriptsTest extends ModuleTestCase
             'actionFrontControllerSetMedia',
         ];
 
-        $this->assertTrue(upgrade_module_4_0_0($module));
+        $this->assertSame(true, upgrade_module_4_0_0($module));
         $this->assertSame([], $module->registeredHooks);
     }
 

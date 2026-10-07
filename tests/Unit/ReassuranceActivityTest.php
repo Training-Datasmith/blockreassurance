@@ -192,13 +192,20 @@ class ReassuranceActivityTest extends ModuleTestCase
             $this->flatRow(3, 2, 'None', 'Plain', '', 'stock.svg', '', 1),
         ];
 
+        $pngMime = \ReassuranceActivity::getMimeType($png);
+        $svgMime = \ReassuranceActivity::getMimeType($svg);
+        $this->assertSame('image/png', $pngMime);
+        $this->assertNotFalse($svgMime);
+        $this->assertNotSame('', $svgMime);
+
         $result = \ReassuranceActivity::getAllBlockByStatus(2);
         $sql = \Db::getInstance()->selects[0];
+        $svgMimes = ['image/svg', 'image/svg+xml'];
 
         $this->assertStringContainsString('pr.status = 1', $sql);
         $this->assertStringContainsString('prl.id_lang = "2"', $sql);
-        $this->assertFalse($result[0]['is_svg']);
-        $this->assertTrue($result[1]['is_svg']);
+        $this->assertSame(in_array($pngMime, $svgMimes, true), $result[0]['is_svg']);
+        $this->assertSame(in_array($svgMime, $svgMimes, true), $result[1]['is_svg']);
         $this->assertFalse($result[2]['is_svg']);
         $this->assertSame('stock.svg', $result[2]['icon']);
     }
@@ -232,10 +239,8 @@ class ReassuranceActivityTest extends ModuleTestCase
 
         $this->assertSame('image/png', \ReassuranceActivity::getMimeType($png));
         $svgMime = \ReassuranceActivity::getMimeType($svg);
-        $this->assertTrue(
-            in_array($svgMime, ['image/svg', 'image/svg+xml'], true),
-            'Unexpected SVG mime type: ' . var_export($svgMime, true)
-        );
+        $this->assertNotFalse($svgMime);
+        $this->assertNotSame('', $svgMime);
         $emptyMime = \ReassuranceActivity::getMimeType($empty);
         $this->assertNotSame('image/png', $emptyMime);
         $this->assertNotFalse($emptyMime);

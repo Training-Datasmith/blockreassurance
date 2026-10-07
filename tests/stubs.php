@@ -523,6 +523,8 @@ namespace {
 
     class Tab
     {
+        public static $created = [];
+
         public $active;
 
         public $class_name;
@@ -535,11 +537,21 @@ namespace {
 
         public $added = false;
 
+        public function __construct()
+        {
+            self::$created[] = $this;
+        }
+
         public function add($autoDate = true, $nullValues = false)
         {
             $this->added = true;
 
             return true;
+        }
+
+        public static function reset()
+        {
+            self::$created = [];
         }
     }
 
