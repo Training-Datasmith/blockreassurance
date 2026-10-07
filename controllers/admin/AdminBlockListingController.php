@@ -144,9 +144,6 @@ class AdminBlockListingController extends ModuleAdminController
         if (is_array($picto)) {
             return $this->ajaxRenderJson('error');
         }
-        if (!is_string($picto)) {
-            $picto = '';
-        }
         $id_block = empty(Tools::getValue('id_block')) ? 0 : (int) Tools::getValue('id_block');
         $type_link = (int) Tools::getValue('typelink');
         $id_cms = (int) Tools::getValue('id_cms');
@@ -154,11 +151,11 @@ class AdminBlockListingController extends ModuleAdminController
         if (is_array($langValues)) {
             return $this->ajaxRenderJson('error');
         }
-        $psr_languages = (array) json_decode(is_string($langValues) ? $langValues : '');
+        $psr_languages = (array) json_decode($langValues);
         $authExtensions = ['gif', 'jpg', 'jpeg', 'jpe', 'png', 'svg', 'avif'];
         $authMimeType = ['image/gif', 'image/jpg', 'image/jpeg', 'image/pjpeg', 'image/png', 'image/x-png', 'image/svg', 'image/svg+xml', 'image/avif'];
 
-        if (!empty($picto) && !in_array(pathinfo($picto, PATHINFO_EXTENSION), $authExtensions)) {
+        if (!empty($picto) && !in_array(strtolower(pathinfo($picto, PATHINFO_EXTENSION)), $authExtensions, true)) {
             $errors[] = Context::getContext()->getTranslator()->trans('Image format not recognized, allowed formats are: .gif, .jpg, .png, .svg, .avif', [], 'Admin.Notifications.Error');
 
             return $this->ajaxRenderJson(empty($errors) ? 'success' : 'error');
@@ -169,6 +166,9 @@ class AdminBlockListingController extends ModuleAdminController
 
         if ($id_block) {
             $blockPsr = $reassuranceRepository->find($id_block);
+            if (null === $blockPsr) {
+                return $this->ajaxRenderJson('error');
+            }
         } else {
             $blockPsr = new Psreassurance();
             // Last position
@@ -186,7 +186,7 @@ class AdminBlockListingController extends ModuleAdminController
         } else {
             if ($picto != '') {
                 $parts = explode('/', $picto);
-                $parts = array_slice($parts , -3);
+                $parts = array_slice($parts, -3);
                 $picto = implode('/', $parts);
             }
             $blockPsr->setIcon($picto);
@@ -206,16 +206,20 @@ class AdminBlockListingController extends ModuleAdminController
             );
 
             if (is_bool($validUpload) && $validUpload === false) {
-                // Remove Custom icon
-                if ($blockPsr->getCustomIcon() != '') {
-                    $filePath = blockreassurance::$static_folder_file_upload . '/' . basename($blockPsr->getCustomIcon());
-                    if (file_exists($filePath)) {
-                        unlink($filePath);
+                $previousCustomIcon = basename($blockPsr->getCustomIcon());
+                if (!move_uploaded_file($fileTmpName, $this->module->folder_file_upload . $filename)) {
+                    $errors[] = Context::getContext()->getTranslator()->trans('An error occurred while attempting to upload the file.', [], 'Admin.Notifications.Error');
+                } else {
+                    // A same-name upload has just overwritten the previous icon
+                    if ($previousCustomIcon !== '' && $previousCustomIcon !== $filename) {
+                        $filePath = blockreassurance::$static_folder_file_upload . '/' . $previousCustomIcon;
+                        if (file_exists($filePath)) {
+                            unlink($filePath);
+                        }
                     }
+                    $blockPsr->setCustomIcon($filename);
+                    $blockPsr->setIcon('');
                 }
-                move_uploaded_file($fileTmpName, $this->module->folder_file_upload . $filename);
-                $blockPsr->setCustomIcon($filename);
-                $blockPsr->setIcon('');
             } else {
                 $errors[] = $validUpload;
             }

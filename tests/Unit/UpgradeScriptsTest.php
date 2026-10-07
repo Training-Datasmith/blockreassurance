@@ -101,11 +101,10 @@ class UpgradeScriptsTest extends ModuleTestCase
         $this->assertSame([], $module->registeredHooks);
     }
 
-    public function testUpgrade400ReturnsTheDatabaseErrorAndSkipsConfiguration()
+    public function testUpgrade400ReturnsFalseOnSqlFailureAndSkipsConfiguration()
     {
         \Db::getInstance()->executeSQueue = [[], []];
         \Db::getInstance()->executeResults = [false];
-        \Db::getInstance()->msgError = 'duplicate table';
         $module = $this->createModule();
 
         $this->assertFalse(upgrade_module_4_0_0($module));
@@ -136,11 +135,10 @@ class UpgradeScriptsTest extends ModuleTestCase
         $this->assertStringContainsString('ALTER TABLE `ps_psreassurance_lang` DROP `id_shop`', $sql[3]);
     }
 
-    public function testUpgrade510ReturnsTheFailingStatementAndStops()
+    public function testUpgrade510ReturnsFalseOnSqlFailureAndStops()
     {
         \Configuration::$values['PS_SHOP_DEFAULT'] = 1;
         \Db::getInstance()->executeResults = [true, false];
-        \Db::getInstance()->msgError = 'cannot drop key';
 
         $this->assertFalse(upgrade_module_5_1_0($this->createModule()));
         $this->assertCount(2, \Db::getInstance()->executed);
@@ -210,14 +208,22 @@ class UpgradeScriptsTest extends ModuleTestCase
         $this->assertSame([], \Db::getInstance()->updates);
     }
 
-    public function testUpgrade600ReturnsTrueEvenWhenAnUpdateFails()
+    public function testUpgrade600ReturnsFalseWhenAnUpdateFails()
     {
         \Db::getInstance()->rows = [
             ['id_psreassurance' => 1, 'icon' => 'a/b/c.svg', 'custom_icon' => ''],
         ];
         \Db::getInstance()->updateResult = false;
 
-        $this->assertTrue(upgrade_module_6_0_0($this->createModule()));
+        $this->assertFalse(upgrade_module_6_0_0($this->createModule()));
         $this->assertCount(1, \Db::getInstance()->updates);
+    }
+
+    public function testUpgrade600ReturnsFalseWhenTheSelectFails()
+    {
+        \Db::getInstance()->rows = false;
+
+        $this->assertFalse(upgrade_module_6_0_0($this->createModule()));
+        $this->assertSame([], \Db::getInstance()->updates);
     }
 }

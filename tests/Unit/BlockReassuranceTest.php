@@ -500,7 +500,7 @@ class BlockReassuranceTest extends ModuleTestCase
         $this->assertSame('global', $module->context->smarty->assigned['currentPage']);
     }
 
-    public function testUploadDirectoryRightsFollowUnixExecutePermission()
+    public function testUploadDirectoryRightsRequireWriteAndExecuteOnUnix()
     {
         if (DIRECTORY_SEPARATOR !== '/' || (function_exists('posix_geteuid') && posix_geteuid() === 0)) {
             $this->markTestSkipped('Unix mode bits are only meaningful for a non-root user.');
@@ -519,7 +519,7 @@ class BlockReassuranceTest extends ModuleTestCase
             $this->assertFalse($this->callPrivate($module, 'folderUploadFilesHasGoodRights'));
 
             chmod($directory, 0555);
-            $this->assertTrue($this->callPrivate($module, 'folderUploadFilesHasGoodRights'));
+            $this->assertFalse($this->callPrivate($module, 'folderUploadFilesHasGoodRights'));
         } finally {
             chmod($directory, 0755);
             rmdir($directory);

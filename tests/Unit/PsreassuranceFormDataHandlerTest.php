@@ -31,17 +31,6 @@ use PrestaShopBundle\Entity\Repository\LangRepository;
 
 class PsreassuranceFormDataHandlerTest extends ModuleTestCase
 {
-    public function testCreateAndUpdateAreStillNoOps()
-    {
-        $entityManager = $this->createMock(EntityManagerInterface::class);
-        $entityManager->expects($this->never())->method('persist');
-        $entityManager->expects($this->never())->method('flush');
-        $handler = $this->handler($entityManager, $this->langRepository());
-
-        $this->assertNull($handler->create(['title' => 'ignored']));
-        $this->assertNull($handler->update(4, ['title' => 'ignored']));
-    }
-
     public function testCreateLangsStoresSubmittedUrlsForEveryLanguage()
     {
         $entityManager = $this->createMock(EntityManagerInterface::class);
@@ -157,20 +146,25 @@ class PsreassuranceFormDataHandlerTest extends ModuleTestCase
         );
     }
 
-    public function testCreateLangsRejectsAMissingLanguageEntity()
+    public function testCreateLangsSkipsALanguageThatDoesNotExist()
     {
+        $entityManager = $this->createMock(EntityManagerInterface::class);
         $langRepository = $this->createMock(LangRepository::class);
         $langRepository->method('find')->willReturn(null);
-        $handler = $this->handler($this->createMock(EntityManagerInterface::class), $langRepository);
+        $block = new Psreassurance();
+        $handler = $this->handler($entityManager, $langRepository);
 
-        $this->expectException(\TypeError::class);
+        $entityManager->expects($this->once())->method('persist')->with($this->identicalTo($block));
+        $entityManager->expects($this->once())->method('flush');
 
         $handler->createLangs(
-            new Psreassurance(),
+            $block,
             [1 => $this->content('Title', 'Body', '')],
             Psreassurance::TYPE_LINK_NONE,
             0
         );
+
+        $this->assertCount(0, $block->getPsreassuranceLangs());
     }
 
     public function testUpdateLangsChangesExistingTranslationsAndSkipsMissingOnes()
@@ -245,7 +239,7 @@ class PsreassuranceFormDataHandlerTest extends ModuleTestCase
     public function testUpdateLangsDoesNotNeedTheLanguageRepository()
     {
         $langRepository = $this->createMock(LangRepository::class);
-        $langRepository->expects($this->once())->method('find')->with(1)->willReturn(null);
+        $langRepository->method('find')->willReturn(null);
         $block = new Psreassurance();
         $existing = new PsreassuranceLang();
         $existing->setLang(new Lang(1))->setTitle('Old')->setDescription('Old')->setLink('');

@@ -368,14 +368,22 @@ class AdminBlockListingControllerTest extends ModuleTestCase
         $this->assertSame([], \Db::getInstance()->selects);
     }
 
-    public function testSaveBlockContentRejectsAnExtensionThatOnlyDiffersByCase()
+    public function testSaveBlockContentAcceptsAnUpperCaseCustomIconExtension()
     {
-        \Tools::$values = ['picto' => 'icons/file.PNG', 'lang_values' => '[]'];
-        $controller = $this->controller();
+        $finder = new \FakeBlockFinder();
+        $finder->found = new Psreassurance();
+        $handler = new \FakeFormDataHandler();
+        $controller = $this->controllerWithServices($finder, $handler);
+        \Tools::$values = $this->blockPayload([
+            'picto' => $controller->module->img_path_perso . '/PHOTO.PNG',
+            'id_block' => 2,
+        ]);
 
         $controller->displayAjaxSaveBlockContent();
 
-        $this->assertSame('"error"', $controller->ajaxOutput);
+        $this->assertSame('PHOTO.PNG', $finder->found->getCustomIcon());
+        $this->assertSame($finder->found, $handler->updated[0][0]);
+        $this->assertSame('"success"', $controller->ajaxOutput);
     }
 
     public function testSaveBlockContentCreatesAnInactiveBlockAfterTheCurrentMaxPosition()
@@ -510,7 +518,7 @@ class AdminBlockListingControllerTest extends ModuleTestCase
         $this->assertSame('"error"', $controller->ajaxOutput);
     }
 
-    public function testSaveBlockContentReplacesTheCustomIconWithTheUploadedFile()
+    public function testSaveBlockContentKeepsTheCurrentIconWhenTheUploadCannotBeMoved()
     {
         $uploadDirectory = sys_get_temp_dir() . '/br-upload-file-' . uniqid('', true);
         mkdir($uploadDirectory, 0777, true);
@@ -545,17 +553,14 @@ class AdminBlockListingControllerTest extends ModuleTestCase
         $destination = $uploadDirectory . '/incoming.svg';
 
         try {
-            // A temp file is not an HTTP upload, so PHP returns false before it
-            // can warn "Unable to move". The controller still stores the new name.
+            // A temp file is not an HTTP upload, so move_uploaded_file() returns false.
             $controller->displayAjaxSaveBlockContent();
 
-            $this->assertFileDoesNotExist($oldIcon);
+            $this->assertFileExists($oldIcon);
             $this->assertFileDoesNotExist($destination);
             $this->assertFileExists($source);
-            $this->assertSame('incoming.svg', $existing->getCustomIcon());
-            $this->assertSame('', $existing->getIcon());
-            $this->assertSame($existing, $handler->updated[0][0]);
-            $this->assertSame('"success"', $controller->ajaxOutput);
+            $this->assertSame([], $handler->updated);
+            $this->assertSame('"error"', $controller->ajaxOutput);
         } finally {
             if (is_file($source)) {
                 unlink($source);
@@ -603,6 +608,8 @@ class AdminBlockListingControllerTest extends ModuleTestCase
         $this->assertSame([], $handler->created);
         $this->assertSame([], $handler->updated);
 
+        $handler = new \FakeFormDataHandler();
+        $controller = $this->controllerWithServices(new \FakeBlockFinder(), $handler);
         \Tools::$values = array_merge($this->blockPayload([]), [
             'lang_values' => [1 => ['title' => 'Bad', 'description' => 'Payload', 'url' => '']],
         ]);
@@ -630,11 +637,14 @@ class AdminBlockListingControllerTest extends ModuleTestCase
         $finder = new \FakeBlockFinder();
         $finder->found = null;
         \Tools::$values = $this->blockPayload(['picto' => 'a.svg', 'id_block' => 99]);
-        $controller = $this->controllerWithServices($finder, new \FakeFormDataHandler());
-
-        $this->expectException(\Error::class);
+        $handler = new \FakeFormDataHandler();
+        $controller = $this->controllerWithServices($finder, $handler);
 
         $controller->displayAjaxSaveBlockContent();
+
+        $this->assertSame('"error"', $controller->ajaxOutput);
+        $this->assertSame([], $handler->created);
+        $this->assertSame([], $handler->updated);
     }
 
     private function controller()

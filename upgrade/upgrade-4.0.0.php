@@ -24,7 +24,7 @@ if (!defined('_PS_VERSION_')) {
 /**
  * @param blockreassurance $module
  *
- * @return bool|string
+ * @return bool|int
  *
  * @throws PrestaShopDatabaseException
  * @throws PrestaShopException

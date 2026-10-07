@@ -86,16 +86,19 @@ class PsreassuranceFormDataHandler implements FormDataHandlerInterface
     {
         foreach ($psr_languages as $langId => $langContent) {
             $lang = $this->langRepository->find($langId);
-            $link = '';
+            if (null === $lang) {
+                continue;
+            }
+            $url = '';
             if ($type_link === Psreassurance::TYPE_LINK_URL) {
-                $link = $langContent->url;
+                $url = $langContent->url;
             }
             $psreassuranceLang = new PsreassuranceLang();
             $psreassuranceLang
                 ->setLang($lang)
                 ->setTitle($langContent->title)
                 ->setDescription($langContent->description)
-                ->setLink($link)
+                ->setLink($url)
             ;
             if (!empty($id_cms) && $type_link === Psreassurance::TYPE_LINK_CMS_PAGE) {
                 $psreassurance->setCmsId($id_cms);
@@ -132,20 +135,20 @@ class PsreassuranceFormDataHandler implements FormDataHandlerInterface
             if (null === $psreassuranceLang) {
                 continue;
             }
-            $link = '';
+            $url = '';
             if ($type_link === Psreassurance::TYPE_LINK_URL) {
-                $link = $langContent->url;
+                $url = $langContent->url;
             }
             $psreassuranceLang
                 ->setTitle($langContent->title)
                 ->setDescription($langContent->description)
-                ->setLink($link)
+                ->setLink($url)
             ;
             if (!empty($id_cms) && $type_link === Psreassurance::TYPE_LINK_CMS_PAGE) {
                 $psreassurance->setCmsId($id_cms);
-                $contextLink = \Context::getContext()->link;
+                $link = \Context::getContext()->link;
                 $psreassuranceLang->setLink(
-                    $contextLink->getCMSLink($id_cms, null, null, $langId)
+                    $link->getCMSLink($id_cms, null, null, $langId)
                 );
             }
         }
