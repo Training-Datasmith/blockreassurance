@@ -67,7 +67,7 @@ class PsreassuranceFormDataHandlerTest extends ModuleTestCase
         $this->assertSame([], \Context::getContext()->link->cmsLinks);
     }
 
-    public function testCreateLangsKeepsTheSubmittedUrlWhenTheLinkTypeIsNone()
+    public function testCreateLangsClearsTheSubmittedUrlWhenTheLinkTypeIsNone()
     {
         $block = new Psreassurance();
         $handler = $this->handler($this->createMock(EntityManagerInterface::class), $this->langRepository());
@@ -80,7 +80,7 @@ class PsreassuranceFormDataHandlerTest extends ModuleTestCase
         );
 
         $this->assertSame(Psreassurance::TYPE_LINK_NONE, $block->getLinkType());
-        $this->assertSame('https://example.test/kept', $block->getPsreassuranceLangByLangId(1)->getLink());
+        $this->assertSame('', $block->getPsreassuranceLangByLangId(1)->getLink());
     }
 
     public function testCreateLangsReplacesLinksWithTheCmsPageForEverySubmittedLanguage()
@@ -120,7 +120,7 @@ class PsreassuranceFormDataHandlerTest extends ModuleTestCase
             0
         );
 
-        $this->assertSame('https://example.test/manual', $block->getPsreassuranceLangByLangId(1)->getLink());
+        $this->assertSame('', $block->getPsreassuranceLangByLangId(1)->getLink());
         $this->assertSame([], \Context::getContext()->link->cmsLinks);
     }
 
@@ -260,7 +260,7 @@ class PsreassuranceFormDataHandlerTest extends ModuleTestCase
         );
 
         $this->assertSame('Kept', $existing->getTitle());
-        $this->assertSame('https://example.test', $existing->getLink());
+        $this->assertSame('', $existing->getLink());
     }
 
     private function handler(EntityManagerInterface $entityManager, LangRepository $langRepository)

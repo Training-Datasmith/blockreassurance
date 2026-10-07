@@ -86,12 +86,16 @@ class PsreassuranceFormDataHandler implements FormDataHandlerInterface
     {
         foreach ($psr_languages as $langId => $langContent) {
             $lang = $this->langRepository->find($langId);
+            $link = '';
+            if ($type_link === Psreassurance::TYPE_LINK_URL) {
+                $link = $langContent->url;
+            }
             $psreassuranceLang = new PsreassuranceLang();
             $psreassuranceLang
                 ->setLang($lang)
                 ->setTitle($langContent->title)
                 ->setDescription($langContent->description)
-                ->setLink($langContent->url)
+                ->setLink($link)
             ;
             if (!empty($id_cms) && $type_link === Psreassurance::TYPE_LINK_CMS_PAGE) {
                 $psreassurance->setCmsId($id_cms);
@@ -128,16 +132,20 @@ class PsreassuranceFormDataHandler implements FormDataHandlerInterface
             if (null === $psreassuranceLang) {
                 continue;
             }
+            $link = '';
+            if ($type_link === Psreassurance::TYPE_LINK_URL) {
+                $link = $langContent->url;
+            }
             $psreassuranceLang
                 ->setTitle($langContent->title)
                 ->setDescription($langContent->description)
-                ->setLink($langContent->url)
+                ->setLink($link)
             ;
             if (!empty($id_cms) && $type_link === Psreassurance::TYPE_LINK_CMS_PAGE) {
                 $psreassurance->setCmsId($id_cms);
-                $link = \Context::getContext()->link;
+                $contextLink = \Context::getContext()->link;
                 $psreassuranceLang->setLink(
-                    $link->getCMSLink($id_cms, null, null, $langId)
+                    $contextLink->getCMSLink($id_cms, null, null, $langId)
                 );
             }
         }

@@ -108,7 +108,7 @@ class UpgradeScriptsTest extends ModuleTestCase
         \Db::getInstance()->msgError = 'duplicate table';
         $module = $this->createModule();
 
-        $this->assertSame('duplicate table', upgrade_module_4_0_0($module));
+        $this->assertFalse(upgrade_module_4_0_0($module));
         $this->assertSame([], \Configuration::$updates);
         $this->assertSame([], $module->registeredHooks);
     }
@@ -142,7 +142,7 @@ class UpgradeScriptsTest extends ModuleTestCase
         \Db::getInstance()->executeResults = [true, false];
         \Db::getInstance()->msgError = 'cannot drop key';
 
-        $this->assertSame('cannot drop key', upgrade_module_5_1_0($this->createModule()));
+        $this->assertFalse(upgrade_module_5_1_0($this->createModule()));
         $this->assertCount(2, \Db::getInstance()->executed);
     }
 

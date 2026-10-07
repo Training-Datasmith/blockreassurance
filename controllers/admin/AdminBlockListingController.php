@@ -141,6 +141,9 @@ class AdminBlockListingController extends ModuleAdminController
         $errors = [];
 
         $picto = Tools::getValue('picto');
+        if (is_array($picto)) {
+            return $this->ajaxRenderJson('error');
+        }
         if (!is_string($picto)) {
             $picto = '';
         }
@@ -148,6 +151,9 @@ class AdminBlockListingController extends ModuleAdminController
         $type_link = (int) Tools::getValue('typelink');
         $id_cms = (int) Tools::getValue('id_cms');
         $langValues = Tools::getValue('lang_values');
+        if (is_array($langValues)) {
+            return $this->ajaxRenderJson('error');
+        }
         $psr_languages = (array) json_decode(is_string($langValues) ? $langValues : '');
         $authExtensions = ['gif', 'jpg', 'jpeg', 'jpe', 'png', 'svg', 'avif'];
         $authMimeType = ['image/gif', 'image/jpg', 'image/jpeg', 'image/pjpeg', 'image/png', 'image/x-png', 'image/svg', 'image/svg+xml', 'image/avif'];

@@ -112,7 +112,7 @@ function upgrade_module_4_0_0($module)
      */
     foreach ($sql as $query) {
         if (Db::getInstance()->execute($query) == false) {
-            return Db::getInstance()->getMsgError();
+            return false;
         }
     }
 

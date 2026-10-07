@@ -590,6 +590,28 @@ class AdminBlockListingControllerTest extends ModuleTestCase
         $this->assertSame('"success"', $controller->ajaxOutput);
     }
 
+    public function testSaveBlockContentRejectsArrayPictoAndLangValues()
+    {
+        $handler = new \FakeFormDataHandler();
+        $controller = $this->controllerWithServices(new \FakeBlockFinder(), $handler);
+
+        \Tools::$values = array_merge($this->blockPayload([]), [
+            'picto' => ['reassurance/pack2/security.svg'],
+        ]);
+        $controller->displayAjaxSaveBlockContent();
+        $this->assertSame('"error"', $controller->ajaxOutput);
+        $this->assertSame([], $handler->created);
+        $this->assertSame([], $handler->updated);
+
+        \Tools::$values = array_merge($this->blockPayload([]), [
+            'lang_values' => [1 => ['title' => 'Bad', 'description' => 'Payload', 'url' => '']],
+        ]);
+        $controller->displayAjaxSaveBlockContent();
+        $this->assertSame('"error"', $controller->ajaxOutput);
+        $this->assertSame([], $handler->created);
+        $this->assertSame([], $handler->updated);
+    }
+
     public function testSaveBlockContentAllowsAnEmptyLanguagePayload()
     {
         \Db::getInstance()->getValueResult = 0;
